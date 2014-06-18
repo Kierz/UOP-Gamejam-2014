@@ -13,14 +13,14 @@ public class MainMenuScript : MonoBehaviour {
 	void Start () {
 		Screen.lockCursor = false;
 		Screen.showCursor = true;
-		
+		/*
 		if ( PlayerPrefs.HasKey ("volume") ) {
 						AudioListener.volume = GameManager.GetVolume ();
 			
 				} else {
 			GameManager.SetVolume( 1.0f );
 		}
-
+        */
 	}
 	
 	// Update is called once per frame

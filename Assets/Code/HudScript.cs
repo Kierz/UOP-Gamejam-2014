@@ -18,8 +18,8 @@ public class HudScript : MonoBehaviour {
     private int stonesLeftTeamOne;
     private int stonesLeftTeamTwo;
 
-    private Color32 redTeamTextColor =	new Color32( 248, 18, 18, 255 );
-    private Color32 blueTeamTextColor =	new Color32( 30, 91, 229, 255 );
+    private Color32 redTeamTextColor =	new Color32( 204, 43, 46, 255 );
+    private Color32 blueTeamTextColor =	new Color32( 56, 94, 196, 255 );
 
 	// Use this for initialization
 	void Start() {

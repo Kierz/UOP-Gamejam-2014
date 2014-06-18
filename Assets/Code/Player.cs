@@ -18,12 +18,11 @@ public class Player : MonoBehaviour {
     public Camera rockCamera;
     public Camera playerCamera;
 
-
     private float speed;
 	private float acceleration =					1.0f;
 	private const float MAX_SPEED =					3.2f;
     private float frictionValue =                   0.2f;
-    private float maxLookAngle =                    10f;
+    //private float maxLookAngle =                    10f;
     private bool canShoot =                         true;
 	private bool canControl =						true;
 	private bool passedTheLine =					false;
@@ -41,6 +40,24 @@ public class Player : MonoBehaviour {
     private static float BOUNDARY_RESTRICTION_Z_OFFSET =    34f;
     private static int DELAY_BETWEEN_CAMERA_SWITCH =        3;
     private static float STOP_MOVING_AT_THIS_SPEED =        0.075f;
+
+    // --------------------------------
+    // ----------- TRIGGERS -----------
+    // --------------------------------
+
+    private bool TriggerFire() {
+        // fire when left mouse button is released
+        return Input.GetMouseButtonUp(0);
+    }
+
+    private bool TriggerMovement() {
+        // move when left mouse button is pressed down
+        return Input.GetMouseButton(0);
+    }
+
+    // ------------------------------------------
+    // ----------- STANDARD FUNCTIONS -----------
+    // ------------------------------------------
 
 	void Start() {
         HOGLINE_POSITION =                                  GameObject.FindGameObjectWithTag("Hogline").transform.position;
@@ -61,10 +78,16 @@ public class Player : MonoBehaviour {
 
 	public void Move() {
 		if ( canControl ) {
+            Vector3 direction;
+            /*
 			float dz =				Input.GetAxis( "Vertical" );
 			dz =					Mathf.Clamp( dz, -0.5f, 1.0f );
-
-            Vector3 direction = new Vector3(0f, 0f, dz);
+             * */
+            if (TriggerMovement()) {
+                direction = new Vector3(0f, 0f, 1f);
+            } else {
+                direction = new Vector3(0f, 0f, 0f);
+            }
 
             if (CanMoveInDirection(direction)) {
                 direction = transform.TransformDirection(direction);
@@ -78,12 +101,38 @@ public class Player : MonoBehaviour {
             }
 
             // only apply accel while below max speed and pressing movement keys
-			if ( speed < MAX_SPEED && MovementKeysPressed() ) {
+            if (speed < MAX_SPEED && TriggerMovement()) {
 				speed += acceleration * Time.deltaTime;
 			}
 		}
 	}
 
+    private void UpdateFriction() {
+        // stop moving if im barely moving anyway
+        if (rigidbody.velocity.magnitude > 0 && !IsMoving()) {
+            rigidbody.velocity = Vector3.zero;
+        }
+
+        if (IsMoving()) {
+            rigidbody.AddForce(rigidbody.velocity * frictionValue * Time.deltaTime * -120f);
+        }
+
+        if (speed >= (acceleration * 2f) && !TriggerMovement()) {
+            speed -= acceleration;
+        }
+    }
+    
+    public void UpdateStone() {
+        if (stoneClone.IsPickedUp()) {
+            stoneClone.transform.position = transform.position + (transform.forward * 4f);
+            if (canShoot && IsMoving()) {
+                if (TriggerFire()) {
+                    ShootStone();
+                }
+            }
+        }
+    }
+    
     private void UpdateAnimation() {
         if (IsMoving()) {
             animation.CrossFade( "Running" );
@@ -93,12 +142,13 @@ public class Player : MonoBehaviour {
         }
     }
 
+    /* LEGACY
 	public void Look() {
 		dx += Input.GetAxis( "Mouse X" ) * GameManager.Singleton().GetSensitivity();
         dx = Mathf.Clamp( dx, -maxLookAngle, maxLookAngle );
         transform.Rotate( 0f, -dx, 0f );
         transform.rotation = Quaternion.Euler( transform.rotation.x, dx + transform.rotation.y, transform.rotation.z );
-	}
+	}*/
 
     public void GiveStone() {
         bool found = false;
@@ -126,18 +176,7 @@ public class Player : MonoBehaviour {
             GiveStone();
         }
 	}
-
-	public void UpdateStone() {
-		if ( stoneClone.IsPickedUp() ) {
-            stoneClone.transform.position = transform.position + (transform.forward * 4f);
-			if ( canShoot && IsMoving() ) {
-				if ( Input.GetMouseButtonDown( 0 ) ) {
-					ShootStone();
-				}
-			}
-		}
-	}
-
+    
 	public void ShootStone() {
 		if ( !passedTheLine ) {
 			canShoot = false;
@@ -245,21 +284,6 @@ public class Player : MonoBehaviour {
                     Destroy(stone);
                 }
             }
-        }
-    }
-
-    private void UpdateFriction() {
-        // stop moving if im barely moving anyway
-        if (rigidbody.velocity.magnitude > 0 && !IsMoving()) {
-            rigidbody.velocity = Vector3.zero;
-        }
-
-        if (IsMoving()) {
-            rigidbody.AddForce(rigidbody.velocity * frictionValue * Time.deltaTime * -120f);
-        }
-
-        if (speed >= (acceleration * 2f) && !MovementKeysPressed()) {
-            speed -= acceleration;
         }
     }
 

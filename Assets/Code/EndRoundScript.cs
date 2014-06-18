@@ -16,27 +16,33 @@ public class EndRoundScript : MonoBehaviour {
 		//roundWinner.text = "This guy won";
 		Screen.lockCursor = false;
 		Screen.showCursor = true;
-		updateRoundNumber ();
+		UpdateRoundNumber();
 
 		//I think it's more efficient to call GameManagers.getScore method once
 		//and then pass array to both functions
-		int[] scores = GameManager.GetScore ();
-		UpdateRoundWinner (scores);
-		updateRoundScore (scores);
+		int[] scores = GameManager.GetScore();
+		UpdateRoundWinner(scores);
+		UpdateRoundScore(scores);
 
 	}
 
-	void OnGUI() {
-		if (GUI.Button (new Rect (Screen.width / 2 - 200, Screen.height / 2 + 80, 100, 50), "Next Round")) {
-			Application.LoadLevel("RinkMain");
-		}
-	}
+    void Update() {
+        // mouse click to go back to the game
+        if (Input.GetMouseButton(0)) {
+            Application.LoadLevel("RinkMain");
+        }
 
-	private void updateRoundNumber() {
+        // escape to go to main menu
+        if (Input.GetKey(KeyCode.Escape)) {
+            Application.LoadLevel("mainmenu");
+        }
+    }
+
+	private void UpdateRoundNumber() {
 		roundNumber.text = "Round: " + GameManager.GetRoundNumber();
 	}
 
-	private void updateRoundScore(int[] scores) {
+	private void UpdateRoundScore(int[] scores) {
 		roundScores.text = "RED TEAM: " + scores [0] + "\n" + "BLUE TEAM: " + scores [1];
 	}
 

@@ -175,7 +175,7 @@ public class GameManager : MonoBehaviour {
         // create msg to display on screen
         winningTeamPoints = winningTeam == eTeam.TEAM_RED ? team1currentscore : team2currentscore;
         pointsPluraled = winningTeamPoints + " POINT";
-        pointsPluraled += winningTeamPoints == 1 ? "S" : "";
+        pointsPluraled += winningTeamPoints != 1 ? "S" : "";
         hudFinalScores.guiText.text = (winningTeam == eTeam.TEAM_RED) ? "RED TEAM SCORES " + pointsPluraled : "BLUE TEAM SCORES " + pointsPluraled; ;
         hudFinalScores.guiText.enabled = true;
     }
